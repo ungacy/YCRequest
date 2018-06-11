@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'YCRequest_Example' do
+  pod 'YCRequest', :path => '../'
+  pod 'YYModel'
+  target 'YCRequest_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
