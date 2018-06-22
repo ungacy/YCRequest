@@ -53,17 +53,12 @@ platform :ios do
     pod_push(
       path: "./#{lib_name}.podspec",
       allow_warnings: true,
-      use_libraries: true,
-      sources: ['https://github.com/CocoaPods/Specs.git']
     )
   end
   
   lane :lint do |options|
     lib_name=Dir.pwd.sub('/fastlane','').split('/').last
-    pod_lib_lint(
-      private: true,
-      sources: ['https://github.com/CocoaPods/Specs.git']
-    )
+    pod_lib_lint()
   end
   
   # You can define as many lanes as you want
