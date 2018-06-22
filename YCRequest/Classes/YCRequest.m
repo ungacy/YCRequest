@@ -68,28 +68,6 @@ NSString *YCRequestURLEncode(id value) {
     return [value stringByAddingPercentEncodingWithAllowedCharacters:[YCRequest sharedInstance].escapeSet];
 }
 
-/**
- 反序列化返回数据,有可能是数组
- @param responseData 服务器返回的字典数据
- @param className 类对应的class
- @return 成功,返回model, 失败,返回错误
- */
-static inline id yc_deserializationResponse(id responseData, NSString *className) {
-    if (!responseData) {
-        return nil;
-    }
-    if ([responseData isKindOfClass:[NSArray class]] || [responseData isKindOfClass:[NSDictionary class]]) {
-        return [YCRequest sharedInstance].serialization(responseData, className);
-    } else if ([responseData isKindOfClass:[NSNull class]]) {
-        return nil;
-    } else if ([responseData isKindOfClass:[NSString class]] || [responseData isKindOfClass:[NSNumber class]]) {
-        return responseData;
-    }
-    //unkown class, assert first
-    NSCAssert(NO, NSStringFromClass([responseData class]));
-    return nil;
-}
-
 static inline void yc_wrapBodyParam(NSString *key, id value, NSMutableDictionary *param) {
     if ([value isKindOfClass:[NSString class]] || [value isKindOfClass:[NSNumber class]]) {
         param[key] = value;
@@ -107,21 +85,6 @@ static inline void yc_wrapBodyParam(NSString *key, id value, NSMutableDictionary
 
 static inline void yc_wrapQueryParam(NSString *key, id value, NSMutableString *uri) {
     [uri appendFormat:@"%@=%@&", key, YCRequestURLEncode(value)];
-}
-
-static inline void yc_wrapFormParam(NSString *key, UIImage *value, NSMutableDictionary *param) {
-    NSData *imageData;
-    if (UIImagePNGRepresentation(value)) {
-        imageData = UIImagePNGRepresentation(value);
-    } else {
-        imageData = UIImageJPEGRepresentation(value, 1);
-    }
-    if (imageData.length > 1024 * 1024) {
-        //如果图片大于1M，则压缩
-        imageData = UIImageJPEGRepresentation(value, 0.7);
-    }
-    param[key] = imageData;
-    param[kYCRequestConfigKeyParamType] = kYCRequestConfigKeyParamTypeForm;
 }
 
 static inline void yc_wrapPathParam(NSString *key, id value, NSMutableString *uri) {
@@ -162,8 +125,6 @@ static inline NSMutableDictionary *yc_wrapParam(NSArray *paramTemplate,
             yc_wrapBodyParam(key, value, param);
         } else if ([type isEqualToString:kYCRequestConfigKeyParamTypePath]) {
             yc_wrapPathParam(key, value, uri);
-        } else if ([type isEqualToString:kYCRequestConfigKeyParamTypeForm]) {
-            yc_wrapFormParam(key, value, param);
         } else if ([type isEqualToString:kYCRequestConfigKeyParamTypeHeader]) {
             if ([value isKindOfClass:[NSNumber class]]) {
                 value = [NSString stringWithFormat:@"%@", value];
@@ -214,20 +175,24 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
 - (nullable NSURLSessionDataTask *)request:(id)model
                                customBlock:(void (^)(AFHTTPSessionManager *manager, id api))customBlock
                                 completion:(YCRequestCompletionBlock)completion {
-    //必须要自定义序列化与反序列化的方法
+    //deserialization & serialization are both required
     NSParameterAssert(self.deserialization && self.serialization);
-    //取出config
+
+    //config
     SEL configSelector = NSSelectorFromString(self.configKey);
     NSParameterAssert([model respondsToSelector:configSelector]);
     NSMethodSignature *signature = [[model class] instanceMethodSignatureForSelector:configSelector];
     NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
     [invocation setTarget:model];
     [invocation setSelector:configSelector];
-    __autoreleasing NSDictionary *config;
+    __autoreleasing NSDictionary *tmp;
     [invocation invoke];
-    [invocation getReturnValue:&config];
+    [invocation getReturnValue:&tmp];
+    __strong NSDictionary *config = [tmp copy];
+    //consumes
     NSString *consumes = config[kYCRequestConfigKeyConsumes];
     _YCRequestUnit *unit = [_YCRequestUnit unitWithManager:self.customSessionBlock timeout:self.timeout consumes:consumes];
+
     __weak typeof(model) weak_model = model;
     __weak typeof(self) weak_self = self;
     __weak typeof(unit.manager) weak_manager = unit.manager;
@@ -244,15 +209,16 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
             customBlock(manager, weak_model);
         };
     }
+    //request needs
     NSString *method = [config[kYCRequestConfigKeyMethod] uppercaseString];
     NSString *path = config[kYCRequestConfigKeyPath];
     NSString *url = config[kYCRequestConfigKeyUrl];
     NSArray *paramTemplate = config[kYCRequestConfigKeyParam];
-    NSString *deserialization = config[kYCRequestConfigKeyDeserialization];
     NSMutableString *uri = [NSMutableString string];
     if (url) {
         [uri appendString:url];
     } else {
+        //link
         if (config[kYCRequestConfigKeyLink]) {
             NSString *linkId = config[kYCRequestConfigKeyLink];
             NSString *linkUrl = self.linkDict[linkId];
@@ -294,37 +260,77 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
                           param:param
                      completion:^(BOOL isSuccess, id responseObject, NSURLResponse *response) {
                          __strong typeof(self) self = weak_self;
+                         [self.queue removeObject:unit];
                          if (self.verbose) {
                              [self logResult:isSuccess responseObject:responseObject uri:uri];
                          }
                          if (self.monitorHandler) {
                              self.monitorHandler(model, isSuccess ? YCRequestStatusFinish : YCRequestStatusFailed, unit.duration);
                          }
-                         if (!completion) {
-                             return;
-                         }
-                         //请求失败,直接返回
-                         if (!isSuccess) {
-                             [self dispatchError:responseObject];
-                             completion(NO, responseObject);
-                             return;
-                         }
-                         if (![responseObject isKindOfClass:[NSDictionary class]]) {
-                             completion(YES, responseObject);
-                             return;
-                         }
-                         id result = yc_deserializationResponse(responseObject, deserialization);
-                         completion(YES, result ?: responseObject);
-                         [self.queue removeObject:unit];
+                         [self responsePipeline:isSuccess
+                                 responseObject:responseObject
+                                       response:response
+                                         config:config
+                                     completion:completion];
                      }];
     [self.queue addObject:unit];
     return task;
 }
 
-- (void)dispatchError:(NSError *)error {
+- (void)responsePipeline:(BOOL)isSuccess
+          responseObject:(id)responseObject
+                response:(NSURLResponse *)response
+                  config:(NSDictionary *)config
+              completion:(YCRequestCompletionBlock)completion {
+    if (!completion) {
+        return;
+    }
+    //request failed
+    if (!isSuccess) {
+        [self errorPipeline:responseObject];
+        completion(NO, responseObject);
+        return;
+    }
+    if (![responseObject isKindOfClass:[NSDictionary class]]) {
+        completion(YES, responseObject);
+        return;
+    }
+    NSString *deserialization = config[kYCRequestConfigKeyDeserialization];
+    id result = [self deserializationResponse:responseObject className:deserialization];
+    completion(YES, result ?: responseObject);
+}
+
+/**
+ override point
+
+ @param error error form http
+ */
+- (void)errorPipeline:(NSError *)error {
     if ([error isKindOfClass:[NSError class]] && self.errorHandler) {
         self.errorHandler(error);
     }
+}
+
+/**
+ 反序列化返回数据,有可能是数组
+ @param responseData 服务器返回的字典数据
+ @param className 类对应的class
+ @return 成功,返回model, 失败,返回错误
+ */
+- (id)deserializationResponse:(id)responseData className:(NSString *)className {
+    if (!responseData) {
+        return nil;
+    }
+    if ([responseData isKindOfClass:[NSArray class]] || [responseData isKindOfClass:[NSDictionary class]]) {
+        return self.serialization(responseData, className);
+    } else if ([responseData isKindOfClass:[NSNull class]]) {
+        return nil;
+    } else if ([responseData isKindOfClass:[NSString class]] || [responseData isKindOfClass:[NSNumber class]]) {
+        return responseData;
+    }
+    //unkown class, assert first
+    NSCAssert(NO, NSStringFromClass([responseData class]));
+    return nil;
 }
 
 @end
