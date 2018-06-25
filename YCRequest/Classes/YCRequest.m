@@ -294,10 +294,6 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
         completion(NO, responseObject);
         return;
     }
-    if (![responseObject isKindOfClass:[NSDictionary class]]) {
-        completion(YES, responseObject);
-        return;
-    }
     NSString *deserialization = config[kYCRequestConfigKeyDeserialization];
     id result = [self deserializationResponse:responseObject className:deserialization];
     completion(YES, result ?: responseObject);
