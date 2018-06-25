@@ -172,23 +172,26 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
     }
 }
 
+- (NSDictionary *)configForApi:(id)api {
+    SEL configSelector = NSSelectorFromString(self.configKey);
+    NSParameterAssert([api respondsToSelector:configSelector]);
+    NSMethodSignature *signature = [[api class] instanceMethodSignatureForSelector:configSelector];
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+    [invocation setTarget:api];
+    [invocation setSelector:configSelector];
+    __autoreleasing NSDictionary *tmp;
+    [invocation invoke];
+    [invocation getReturnValue:&tmp];
+    return [tmp copy];
+}
+
 - (nullable NSURLSessionDataTask *)request:(id)model
                                customBlock:(void (^)(AFHTTPSessionManager *manager, id api))customBlock
                                 completion:(YCRequestCompletionBlock)completion {
     //deserialization & serialization are both required
     NSParameterAssert(self.deserialization && self.serialization);
-
     //config
-    SEL configSelector = NSSelectorFromString(self.configKey);
-    NSParameterAssert([model respondsToSelector:configSelector]);
-    NSMethodSignature *signature = [[model class] instanceMethodSignatureForSelector:configSelector];
-    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-    [invocation setTarget:model];
-    [invocation setSelector:configSelector];
-    __autoreleasing NSDictionary *tmp;
-    [invocation invoke];
-    [invocation getReturnValue:&tmp];
-    __strong NSDictionary *config = [tmp copy];
+    NSDictionary *config = [self configForApi:model];
     //consumes
     NSString *consumes = config[kYCRequestConfigKeyConsumes];
     _YCRequestUnit *unit = [_YCRequestUnit unitWithManager:self.customSessionBlock timeout:self.timeout consumes:consumes];
