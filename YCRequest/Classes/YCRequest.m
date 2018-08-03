@@ -26,9 +26,9 @@ const NSTimeInterval YCRequestDefaultTimeout = 5;
 
 @property (nonatomic, copy) void (^errorHandler)(NSError *error);
 
-@property (nonatomic, copy) void (^logHandler)(NSString *log);
+@property (nonatomic, copy) void (^logHandler)(NSString *log, NSDictionary *param, NSDictionary *config);
 
-@property (nonatomic, copy) void (^monitorHandler)(id api, YCRequestStatus status, CGFloat duration);
+@property (nonatomic, copy) void (^monitorHandler)(id api, YCRequestStatus status, CGFloat duration, NSDictionary *config);
 
 @property (nonatomic, strong) NSMutableCharacterSet *escapeSet;
 
@@ -151,11 +151,11 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
     return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
 
-- (void)logResult:(BOOL)isSuccess responseObject:(id)responseObject uri:(NSMutableString *)uri {
+- (void)logResult:(BOOL)isSuccess responseObject:(id)responseObject uri:(NSMutableString *)uri config:(NSDictionary *)config {
     if (isSuccess) {
         NSString *log = [NSString stringWithFormat:@"\n%@\nresponse:\n%@", uri, yc_prettyJson(responseObject)];
         if (self.logHandler) {
-            self.logHandler(log);
+            self.logHandler(log, nil, config);
         } else {
             YCDLog(@"%@", log);
         }
@@ -165,7 +165,7 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
         NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         NSString *log = [NSString stringWithFormat:@"Failure: path [%@] error:\n[%@]", uri, string];
         if (self.logHandler) {
-            self.logHandler(log);
+            self.logHandler(log, nil, config);
         } else {
             YCDLog(@"%@", log);
         }
@@ -248,13 +248,13 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
         [allHeader setValuesForKeysWithDictionary:header];
         NSString *log = [NSString stringWithFormat:@"\n[%@]\n%@\nheader\n%@\nparam\n%@", method, uri, yc_prettyJson(allHeader), yc_prettyJson(param)];
         if (self.logHandler) {
-            self.logHandler(log);
+            self.logHandler(log, param, config);
         } else {
             YCDLog(@"%@", log);
         }
     }
     if (self.monitorHandler) {
-        self.monitorHandler(model, YCRequestStatusBegin, 0);
+        self.monitorHandler(model, YCRequestStatusBegin, 0, config);
     }
     NSURLSessionDataTask *task =
         [unit requestWithMethod:method
@@ -265,10 +265,10 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
                          __strong typeof(self) self = weak_self;
                          [self.queue removeObject:unit];
                          if (self.verbose) {
-                             [self logResult:isSuccess responseObject:responseObject uri:uri];
+                             [self logResult:isSuccess responseObject:responseObject uri:uri config:config];
                          }
                          if (self.monitorHandler) {
-                             self.monitorHandler(model, isSuccess ? YCRequestStatusFinish : YCRequestStatusFailed, unit.duration);
+                             self.monitorHandler(model, isSuccess ? YCRequestStatusFinish : YCRequestStatusFailed, unit.duration, config);
                          }
                          [self responsePipeline:isSuccess
                                  responseObject:responseObject

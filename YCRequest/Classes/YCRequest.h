@@ -56,11 +56,11 @@ request.baseUri = @"192.168.1.111";
 
 #pragma mark - Log Handler
 
-- (void)setLogHandler:(void (^)(NSString *log))logHandler;
+- (void)setLogHandler:(void (^)(NSString *log, NSDictionary *param,  NSDictionary *config))logHandler;
 
 #pragma mark - Monitor Handler
 
-- (void)setMonitorHandler:(void (^)(id api, YCRequestStatus status, CGFloat duration))monitorHandler;
+- (void)setMonitorHandler:(void (^)(id api, YCRequestStatus status, CGFloat duration, NSDictionary *config))monitorHandler;
 
 #pragma mark - Serialization
 
