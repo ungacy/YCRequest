@@ -11,6 +11,7 @@
 #import "_YCRequestPrivateDefine.h"
 #import "_YCRequestUnit.h"
 #import <AFNetworking/AFNetworking.h>
+#import <objc/runtime.h>
 
 NSErrorDomain const YCRequestErrorDomain = @"com.ungacy.request.error";
 
@@ -185,7 +186,7 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
     return [tmp copy];
 }
 
-- (nullable NSURLSessionDataTask *)request:(id)model
+- (nullable NSURLSessionDataTask *)request:(NSObject *)model
                                customBlock:(void (^)(AFHTTPSessionManager *manager, id api))customBlock
                                 completion:(YCRequestCompletionBlock)completion {
     //deserialization & serialization are both required
@@ -194,7 +195,9 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
     NSDictionary *config = [self configForApi:model];
     //consumes
     NSString *consumes = config[kYCRequestConfigKeyConsumes];
-    _YCRequestUnit *unit = [_YCRequestUnit unitWithManager:self.customSessionBlock timeout:self.timeout consumes:consumes];
+    NSNumber *timeoutValue = model.ycr_store(@"timeout", nil);
+    CGFloat timeout = timeoutValue ? timeoutValue.floatValue : self.timeout;
+    _YCRequestUnit *unit = [_YCRequestUnit unitWithManager:self.customSessionBlock timeout:timeout consumes:consumes];
 
     __weak typeof(model) weak_model = model;
     __weak typeof(self) weak_self = self;
@@ -330,6 +333,41 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
     //unkown class, assert first
     NSCAssert(NO, NSStringFromClass([responseData class]));
     return nil;
+}
+
+@end
+
+static void *YCRequestStorageKey = &YCRequestStorageKey;
+
+@implementation NSObject (YCRequestStorage)
+
+- (void)setYcr_storage:(NSMutableDictionary *)ycr_storage {
+    objc_setAssociatedObject(self, &YCRequestStorageKey, ycr_storage, OBJC_ASSOCIATION_RETAIN);
+}
+
+- (NSMutableDictionary *)ycr_storage {
+    NSMutableDictionary *storage = objc_getAssociatedObject(self, &YCRequestStorageKey);
+    if (!storage) {
+        storage = [NSMutableDictionary dictionary];
+        [self setYcr_storage:storage];
+    }
+    return storage;
+}
+
+- (id (^)(NSString *, id))ycr_store {
+    id (^block)(NSString *key, id value) = ^id(NSString *key, id value) {
+        if (key && value) {
+            self.ycr_storage[key] = value;
+        }
+        if (key && !value) {
+            return self.ycr_storage[key];
+        }
+        if (!key && value) {
+            return [self.ycr_storage allKeysForObject:value];
+        }
+        return self;
+    };
+    return block;
 }
 
 @end

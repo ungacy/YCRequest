@@ -77,3 +77,13 @@ request.baseUri = @"192.168.1.111";
 @end
 
 NS_ASSUME_NONNULL_END
+
+@interface NSObject (YCRequestStorage)
+
+/**
+ If `value` is nil, return value of key, otherwize will save value of key
+ If `key` is nil, return all keys of `value`
+ */
+- (id (^)(NSString *key, id value))ycr_store;
+
+@end
