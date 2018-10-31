@@ -47,12 +47,12 @@ request.baseUri = @"192.168.1.111";
 
 @property (nonatomic, assign) BOOL verbose;
 
-- (nullable NSURLSessionDataTask *)request:(id)model
+- (nullable NSURLSessionDataTask *)request:(id)api
                                customBlock:(void (^)(AFHTTPSessionManager *manager, id api))customBlock
                                 completion:(YCRequestCompletionBlock)completion;
 #pragma mark - Error Handler
 
-- (void)setErrorHandler:(void (^)(NSError *error))errorHandler;
+- (void)setErrorHandler:(void (^)(id api, NSError *error))errorHandler;
 
 #pragma mark - Log Handler
 

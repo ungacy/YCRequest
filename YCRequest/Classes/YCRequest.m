@@ -25,7 +25,7 @@ const NSTimeInterval YCRequestDefaultTimeout = 5;
 
 @property (nonatomic, strong) NSMutableArray *queue;
 
-@property (nonatomic, copy) void (^errorHandler)(NSError *error);
+@property (nonatomic, copy) void (^errorHandler)(id api, NSError *error);
 
 @property (nonatomic, copy) void (^logHandler)(NSString *log, NSDictionary *param, NSDictionary *config);
 
@@ -186,20 +186,20 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
     return [tmp copy];
 }
 
-- (nullable NSURLSessionDataTask *)request:(NSObject *)model
+- (nullable NSURLSessionDataTask *)request:(NSObject *)api
                                customBlock:(void (^)(AFHTTPSessionManager *manager, id api))customBlock
                                 completion:(YCRequestCompletionBlock)completion {
     //deserialization & serialization are both required
     NSParameterAssert(self.deserialization && self.serialization);
     //config
-    NSDictionary *config = [self configForApi:model];
+    NSDictionary *config = [self configForApi:api];
     //consumes
     NSString *consumes = config[kYCRequestConfigKeyConsumes];
-    NSNumber *timeoutValue = model.ycr_store(@"timeout", nil);
+    NSNumber *timeoutValue = api.ycr_store(@"timeout", nil);
     CGFloat timeout = timeoutValue ? timeoutValue.floatValue : self.timeout;
     _YCRequestUnit *unit = [_YCRequestUnit unitWithManager:self.customSessionBlock timeout:timeout consumes:consumes];
 
-    __weak typeof(model) weak_model = model;
+    __weak typeof(api) weak_api = api;
     __weak typeof(self) weak_self = self;
     __weak typeof(unit.manager) weak_manager = unit.manager;
     //AOP
@@ -207,12 +207,12 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
         if (!weak_self.customBlock) {
             return;
         }
-        weak_self.customBlock(manager, weak_model);
+        weak_self.customBlock(manager, weak_api);
     };
 
     if (customBlock) {
         unit.customBlock = ^(AFHTTPSessionManager *manager) {
-            customBlock(manager, weak_model);
+            customBlock(manager, weak_api);
         };
     }
     //request needs
@@ -239,7 +239,7 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
     }
     [uri appendString:@"?"];
     NSMutableDictionary *header = [NSMutableDictionary dictionary];
-    NSMutableDictionary *param = yc_wrapParam(paramTemplate, model, uri, header);
+    NSMutableDictionary *param = yc_wrapParam(paramTemplate, api, uri, header);
     if ([uri hasSuffix:@"&"]) {
         [uri deleteCharactersInRange:NSMakeRange(uri.length - 1, 1)];
     }
@@ -257,7 +257,7 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
         }
     }
     if (self.monitorHandler) {
-        self.monitorHandler(model, YCRequestStatusBegin, 0, config);
+        self.monitorHandler(api, YCRequestStatusBegin, 0, config);
     }
     NSURLSessionDataTask *task =
         [unit requestWithMethod:method
@@ -271,9 +271,10 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
                              [self logResult:isSuccess responseObject:responseObject uri:uri config:config];
                          }
                          if (self.monitorHandler) {
-                             self.monitorHandler(model, isSuccess ? YCRequestStatusFinish : YCRequestStatusFailed, unit.duration, config);
+                             self.monitorHandler(api, isSuccess ? YCRequestStatusFinish : YCRequestStatusFailed, unit.duration, config);
                          }
                          [self responsePipeline:isSuccess
+                                            api:api
                                  responseObject:responseObject
                                        response:response
                                          config:config
@@ -284,6 +285,7 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
 }
 
 - (void)responsePipeline:(BOOL)isSuccess
+                     api:(id)api
           responseObject:(id)responseObject
                 response:(NSURLResponse *)response
                   config:(NSDictionary *)config
@@ -293,7 +295,7 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
     }
     //request failed
     if (!isSuccess) {
-        [self errorPipeline:responseObject];
+        [self errorPipeline:responseObject api:api];
         completion(NO, responseObject);
         return;
     }
@@ -307,9 +309,9 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
 
  @param error error form http
  */
-- (void)errorPipeline:(NSError *)error {
+- (void)errorPipeline:(NSError *)error api:(id)api {
     if ([error isKindOfClass:[NSError class]] && self.errorHandler) {
-        self.errorHandler(error);
+        self.errorHandler(api, error);
     }
 }
 
