@@ -13,8 +13,6 @@
 #import "YCRequest.h"
 #import "YCRequestDefine.h"
 #import "YCRequestMaker.h"
-#import "_YCRequestPrivateDefine.h"
-#import "_YCRequestUnit.h"
 
 FOUNDATION_EXPORT double YCRequestVersionNumber;
 FOUNDATION_EXPORT const unsigned char YCRequestVersionString[];
