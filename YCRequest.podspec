@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'YCRequest'
-  s.version          = '0.1.10'
+  s.version          = '0.1.11'
   s.summary          = 'YCRequest.'
 
 # This description is used to generate tags and improve search results.
@@ -32,7 +32,7 @@ YCRequest with AFNetworking
   s.source_files = 'YCRequest/Classes/*.{h,m}'
   s.public_header_files = 'YCRequest/Classes/YC*.h'
   
-  s.dependency 'AFNetworking'
+  s.dependency 'AFNetworking/NSURLSession'
   s.ios.frameworks = 'MobileCoreServices', 'SystemConfiguration'
 
 end
