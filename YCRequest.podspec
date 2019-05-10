@@ -28,6 +28,7 @@ YCRequest with AFNetworking
   # s.social_media_url = 'https://twitter.com/ungacy'
 
   s.ios.deployment_target = '8.0'
+  s.osx.deployment_target = '10.9'
 
   s.source_files = 'YCRequest/Classes/*.{h,m}'
   s.public_header_files = 'YCRequest/Classes/YC*.h'
