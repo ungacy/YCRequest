@@ -10,8 +10,8 @@
 #import "YCRequestMaker.h"
 #import "_YCRequestPrivateDefine.h"
 #import "_YCRequestUnit.h"
-#import <AFNetworking/AFURLSessionManager.h>
 #import <AFNetworking/AFHTTPSessionManager.h>
+#import <AFNetworking/AFURLSessionManager.h>
 #import <objc/runtime.h>
 
 NSErrorDomain const YCRequestErrorDomain = @"com.ungacy.request.error";

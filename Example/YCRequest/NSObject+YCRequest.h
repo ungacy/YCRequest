@@ -11,9 +11,9 @@
 
 @interface NSObject (YCRequest)
 
-- (nullable NSURLSessionDataTask *)requestWithCompletion:(void (^__nullable)(BOOL isSuccess, __nullable id result))completion;
+- (NSURLSessionDataTask *)requestWithCompletion:(void (^)(BOOL isSuccess, id result))completion;
 
-- (nullable NSURLSessionDataTask *)requestWithCustomBlock:(void (^__nullable)(AFHTTPSessionManager *manager, id api))customBlock
-                                               completion:(void (^__nullable)(BOOL isSuccess, __nullable id result))completion;
+- (NSURLSessionDataTask *)requestWithCustomBlock:(void (^)(AFHTTPSessionManager *manager, id api))customBlock
+                                      completion:(void (^)(BOOL isSuccess, id result))completion;
 
 @end

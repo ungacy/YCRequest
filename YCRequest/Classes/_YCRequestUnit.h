@@ -11,7 +11,7 @@
 
 @class AFHTTPSessionManager;
 @interface _YCRequestUnit : NSObject
-
+NS_ASSUME_NONNULL_BEGIN
 + (instancetype)unitWithManager:(AFHTTPSessionManager * (^)(void))managerBlock timeout:(NSTimeInterval)timeout consumes:(NSString *)consumes;
 
 - (nullable NSURLSessionDataTask *)requestWithMethod:(NSString *)method
@@ -25,5 +25,5 @@
 @property (nonatomic, readonly, strong) AFHTTPSessionManager *manager;
 
 @property (nonatomic, readonly) NSTimeInterval duration;
-
+NS_ASSUME_NONNULL_END
 @end

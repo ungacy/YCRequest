@@ -55,7 +55,7 @@ request.baseUri = @"192.168.1.111";
 
 #pragma mark - Log Handler
 
-- (void)setLogHandler:(void (^)(NSString *log, NSDictionary *param,  NSDictionary *config))logHandler;
+- (void)setLogHandler:(void (^)(NSString *log, NSDictionary *param, NSDictionary *config))logHandler;
 
 #pragma mark - Monitor Handler
 
@@ -69,20 +69,19 @@ request.baseUri = @"192.168.1.111";
 
 #pragma mark - Custom
 
-@property (nonatomic, copy, nullable) id (^customBlock)(AFHTTPSessionManager *manager, id api);
+@property (nonatomic, copy) id (^customBlock)(AFHTTPSessionManager *manager, id api);
 
-@property (nonatomic, copy, nullable) AFHTTPSessionManager * (^customSessionBlock)(void);
+@property (nonatomic, copy) AFHTTPSessionManager * (^customSessionBlock)(void);
 
 @end
 
 NS_ASSUME_NONNULL_END
 
 @interface NSObject (YCRequestStorage)
-
 /**
  If `value` is nil, return value of key, otherwize will save value of key
  If `key` is nil, return all keys of `value`
  */
-- (id (^)(NSString *key, id value))ycr_store;
+- (id _Nullable (^_Nullable)(NSString *_Nullable key, id _Nullable value))ycr_store;
 
 @end
