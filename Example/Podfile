@@ -1,5 +1,5 @@
 use_frameworks!
-
+inhibit_all_warnings!
 target 'YCRequest_Example' do
   pod 'YCRequest', :path => '../'
   pod 'YYModel'

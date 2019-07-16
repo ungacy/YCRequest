@@ -286,7 +286,7 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
 }
 
 - (void)responsePipeline:(BOOL)isSuccess
-                     api:(id)api
+                     api:(NSObject *)api
           responseObject:(id)responseObject
                 response:(NSURLResponse *)response
                   config:(NSDictionary *)config
@@ -300,7 +300,7 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
         completion(NO, responseObject);
         return;
     }
-    NSString *deserialization = config[kYCRequestConfigKeyDeserialization];
+    NSString *deserialization = api.ycr_store(kYCRequestConfigKeyDeserialization, nil) ?: config[kYCRequestConfigKeyDeserialization];
     id result = [self deserializationResponse:responseObject className:deserialization];
     completion(YES, result ?: responseObject);
 }
