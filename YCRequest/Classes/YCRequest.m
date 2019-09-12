@@ -281,7 +281,9 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
                                          config:config
                                      completion:completion];
                      }];
-    [self.queue addObject:unit];
+    if (unit) {
+        [self.queue addObject:unit];
+    }
     return task;
 }
 

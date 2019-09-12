@@ -103,7 +103,8 @@
     AFHTTPSessionManager *manager = self.manager;
     NSParameterAssert([method isEqualToString:@"POST"] ||
                       [method isEqualToString:@"GET"] ||
-                      [method isEqualToString:@"PUT"]);
+                      [method isEqualToString:@"PUT"] ||
+                      [method isEqualToString:@"DELETE"]);
     __weak typeof(manager) weak_manager = manager;
     if (header.count > 0) {
         AFHTTPRequestSerializer *requestSerializer = manager.requestSerializer;
