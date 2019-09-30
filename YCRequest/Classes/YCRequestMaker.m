@@ -21,6 +21,7 @@
     @(YCRequestMakerOperationParamBody): kYCRequestConfigKeyParamTypeBody,   \
     @(YCRequestMakerOperationParamPath): kYCRequestConfigKeyParamTypePath,   \
     @(YCRequestMakerOperationParamForm): kYCRequestConfigKeyParamTypeForm,   \
+    @(YCRequestMakerOperationParamHeader): kYCRequestConfigKeyParamTypeHeader,   \
 }
 
 @interface YCRequestMaker ()
@@ -61,19 +62,7 @@
     };
 }
 
-- (YCRequestMaker * (^)(void))get {
-    return ^YCRequestMaker *(void) {
-        return self.method(YCRequestMakerOperationMethodGET);
-    };
-}
-
-- (YCRequestMaker * (^)(void))post {
-    return ^YCRequestMaker *(void) {
-        return self.method(YCRequestMakerOperationMethodPOST);
-    };
-}
-
-- (YCRequestMaker * (^)(NSString *path))path {
+- (YCRequestMaker * (^)(NSString *path))mapping {
     return ^YCRequestMaker *(NSString *path) {
         self.dict[kYCRequestConfigKeyPath] = path;
         return self;
@@ -87,13 +76,6 @@
     };
 }
 
-- (YCRequestMaker * (^)(NSString *link))link {
-    return ^YCRequestMaker *(NSString *link) {
-        self.dict[kYCRequestConfigKeyLink] = link;
-        return self;
-    };
-}
-
 - (YCRequestMaker * (^)(NSString *response))response {
     return ^YCRequestMaker *(NSString *response) {
         self.dict[kYCRequestConfigKeyDeserialization] = response;
@@ -103,16 +85,14 @@
 
 - (YCRequestMaker * (^)(YCRequestMakerOperation operation))paramType {
     return ^YCRequestMaker *(YCRequestMakerOperation operation) {
-        self.paramOperation ^= 0x0f;
-        self.paramOperation |= operation;
+        self.paramOperation = operation;
         return self;
     };
 }
 
 - (YCRequestMaker * (^)(NSDictionary *param))param {
-    YCRequestMakerOperation paramOperation = self.paramOperation & YCRequestMakerOperationMethodMask;
+    YCRequestMakerOperation paramOperation = self.paramOperation;
     if (paramOperation == YCRequestMakerOperationNone) {
-        //NSAssert(paramOperation != YCRequestMakerOperationNone, @"Please call YCRequestMaker.paramType() first, set to default type `query`");
         paramOperation = YCRequestMakerOperationParamQuery;
     }
     return ^YCRequestMaker *(NSDictionary *param) {
@@ -128,6 +108,38 @@
         }];
         return self;
     };
+}
+
+- (YCRequestMaker * (^)(NSString *path))put {
+    return self.method(YCRequestMakerOperationMethodPUT).mapping;
+}
+
+- (YCRequestMaker * (^)(NSString *path))delete {
+    return self.method(YCRequestMakerOperationMethodDELETE).mapping;
+}
+
+- (YCRequestMaker * (^)(NSString *path))get {
+    return self.method(YCRequestMakerOperationMethodGET).mapping;
+}
+
+- (YCRequestMaker * (^)(NSString *path))post {
+    return self.method(YCRequestMakerOperationMethodPOST).mapping;
+}
+
+- (YCRequestMaker * (^)(NSDictionary *param))header {
+    return self.paramType(YCRequestMakerOperationParamHeader).param;
+}
+
+- (YCRequestMaker * (^)(NSDictionary *param))pathVariable {
+    return self.paramType(YCRequestMakerOperationParamPath).param;
+}
+
+- (YCRequestMaker * (^)(NSDictionary *param))query {
+    return self.paramType(YCRequestMakerOperationParamQuery).param;
+}
+
+- (YCRequestMaker * (^)(NSDictionary *param))body {
+    return self.paramType(YCRequestMakerOperationParamBody).param;
 }
 
 @end

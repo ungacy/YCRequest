@@ -15,11 +15,14 @@ NS_ASSUME_NONNULL_BEGIN
 @class AFHTTPSessionManager;
 
 /**
-serialization & deserialization base on YYModel on
- 
+Example for `serialization` & `deserialization` base on [YYModel](https://github.com/ibireme/YYModel)
+
 @code
 YCRequest *request = [YCRequest sharedInstance];
 request.serialization = ^id(id jsonObject, NSString *className) {
+    if (!jsonObject) {
+        return nil;
+    }
     Class class = NSClassFromString(className);
     if ([jsonObject isKindOfClass:[NSArray class]]) {
         NSArray *result = [NSArray modelArrayWithClass:class json:jsonObject];
@@ -30,8 +33,9 @@ request.serialization = ^id(id jsonObject, NSString *className) {
 request.deserialization = ^id(id object) {
     return [object modelToJSONObject];
 };
-request.timeout = 25;
+request.timeout = 10;
 request.baseUri = @"192.168.1.111";
+
 **/
 @interface YCRequest : NSObject
 
