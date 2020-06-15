@@ -78,6 +78,10 @@ request.baseUri = @"192.168.1.111";
 
 @property (nonatomic, copy) AFHTTPSessionManager * (^customSessionBlock)(void);
 
+#pragma mark - DataTask
+
+- (NSURLSessionDataTask *)dataTaskForAPI:(id)api;
+
 @end
 
 NS_ASSUME_NONNULL_END

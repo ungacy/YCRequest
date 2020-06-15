@@ -22,10 +22,6 @@ const NSTimeInterval YCRequestDefaultTimeout = 5;
 
 @interface YCRequest ()
 
-@property (nonatomic, strong) NSMutableDictionary *container;
-
-@property (nonatomic, strong) NSMutableArray *queue;
-
 @property (nonatomic, copy) void (^errorHandler)(id api, NSError *error);
 
 @property (nonatomic, copy) void (^logHandler)(NSString *log, NSDictionary *param, NSDictionary *config);
@@ -33,6 +29,8 @@ const NSTimeInterval YCRequestDefaultTimeout = 5;
 @property (nonatomic, copy) void (^monitorHandler)(id api, YCRequestStatus status, CGFloat duration, NSDictionary *config);
 
 @property (nonatomic, strong) NSMutableCharacterSet *escapeSet;
+
+@property (nonatomic, strong) NSMapTable *mapTable;
 
 @end
 
@@ -52,12 +50,11 @@ const NSTimeInterval YCRequestDefaultTimeout = 5;
     self = [super init];
     if (self) {
         //防止反复修改容器大小
-        _container = [NSMutableDictionary dictionaryWithCapacity:3];
-        _queue = [NSMutableArray arrayWithCapacity:3];
         _timeout = YCRequestDefaultTimeout;
         _verbose = YES;
         _escapeSet = [[NSCharacterSet URLQueryAllowedCharacterSet] mutableCopy];
         [_escapeSet removeCharactersInString:@"+;&=$,"];
+        _mapTable = [NSMapTable weakToStrongObjectsMapTable];
     }
     return self;
 }
@@ -70,19 +67,23 @@ NSString *YCRequestURLEncode(id value) {
     return [value stringByAddingPercentEncodingWithAllowedCharacters:[YCRequest sharedInstance].escapeSet];
 }
 
-static inline void yc_wrapBodyParam(NSString *key, id value, NSMutableDictionary *param) {
+static inline NSArray *yc_wrapBodyParam(NSString *key, id value, NSMutableDictionary *param) {
     if ([value isKindOfClass:[NSString class]] || [value isKindOfClass:[NSNumber class]]) {
         param[key] = value;
     } else {
-        NSDictionary *dict = [YCRequest sharedInstance].deserialization(value);
-        if (dict && [dict isKindOfClass:[NSDictionary class]]) {
+        id jsonObject = [YCRequest sharedInstance].deserialization(value);
+        if (jsonObject && [jsonObject isKindOfClass:[NSDictionary class]]) {
+            NSDictionary *dict = jsonObject;
             [dict enumerateKeysAndObjectsUsingBlock:^(id _Nonnull key,
                                                       id _Nonnull obj,
                                                       BOOL *_Nonnull stop) {
                 param[key] = obj;
             }];
+        } else if ([jsonObject isKindOfClass:[NSArray class]]) {
+            return jsonObject;
         }
     }
+    return nil;
 }
 
 static inline void yc_wrapQueryParam(NSString *key, id value, NSMutableString *uri) {
@@ -100,11 +101,12 @@ static inline void yc_wrapPathParam(NSString *key, id value, NSMutableString *ur
                               range:NSMakeRange(0, [uri length])];
 }
 
-static inline NSMutableDictionary *yc_wrapParam(NSArray *paramTemplate,
+static inline NSObject *yc_wrapParam(NSArray *paramTemplate,
                                                 id model,
                                                 NSMutableString *uri,
                                                 NSMutableDictionary *header) {
     NSMutableDictionary *param = [NSMutableDictionary dictionaryWithCapacity:paramTemplate.count];
+    __block NSArray *arrayParam = nil;
     [paramTemplate enumerateObjectsUsingBlock:^(NSDictionary *_Nonnull obj,
                                                 NSUInteger idx,
                                                 BOOL *_Nonnull stop) {
@@ -122,9 +124,12 @@ static inline NSMutableDictionary *yc_wrapParam(NSArray *paramTemplate,
             }
         }
         if ([type isEqualToString:kYCRequestConfigKeyParamTypeQuery]) { // add it to uri TODO : default value
-            yc_wrapQueryParam(key, value, uri);
+             yc_wrapQueryParam(key, value, uri);
         } else if ([type isEqualToString:kYCRequestConfigKeyParamTypeBody]) {
-            yc_wrapBodyParam(key, value, param);
+            id some = yc_wrapBodyParam(key, value, param);
+            if (some) {
+                arrayParam = some;
+            }
         } else if ([type isEqualToString:kYCRequestConfigKeyParamTypePath]) {
             yc_wrapPathParam(key, value, uri);
         } else if ([type isEqualToString:kYCRequestConfigKeyParamTypeHeader]) {
@@ -136,14 +141,14 @@ static inline NSMutableDictionary *yc_wrapParam(NSArray *paramTemplate,
             NSCAssert(!type, @"Who are you here!");
         }
     }];
-    return param;
+    return arrayParam ?: param;
 }
 
-static inline NSString *yc_prettyJson(NSDictionary *object) {
+static inline NSString *yc_prettyJson(id object) {
     if (!object) {
         return nil;
     }
-    if (![object isKindOfClass:[NSDictionary class]]) {
+    if (![object isKindOfClass:[NSDictionary class]] && ![object isKindOfClass:[NSArray class]]) {
         return [object description];
     }
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:object options:NSJSONWritingPrettyPrinted error:nil];
@@ -219,6 +224,7 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
     //request needs
     NSString *method = [config[kYCRequestConfigKeyMethod] uppercaseString];
     NSString *path = config[kYCRequestConfigKeyPath];
+    path = api.ycr_store(@"path", nil) ?: path;
     NSString *url = config[kYCRequestConfigKeyUrl];
     NSArray *paramTemplate = config[kYCRequestConfigKeyParam];
     NSMutableString *uri = [NSMutableString string];
@@ -240,23 +246,38 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
     }
     [uri appendString:@"?"];
     NSMutableDictionary *header = [NSMutableDictionary dictionary];
-    NSMutableDictionary *param = yc_wrapParam(paramTemplate, api, uri, header);
+    id param = yc_wrapParam(paramTemplate, api, uri, header);
+    if ([param isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *dictParam = param;
+        if (_verbose && !dictParam[kYCRequestConfigKeyParamType]) {
+            NSMutableDictionary *allHeader = [weak_manager.requestSerializer.HTTPRequestHeaders mutableCopy];
+            [allHeader setValuesForKeysWithDictionary:header];
+            NSString *log = [NSString stringWithFormat:@"\n[%@]\n%@\nheader\n%@\nparam\n%@", method, uri, yc_prettyJson(allHeader), yc_prettyJson(param)];
+            if (self.logHandler) {
+                self.logHandler(log, dictParam, config);
+            } else {
+                YCDLog(@"%@", log);
+            }
+        }
+    } else if ([param isKindOfClass:[NSArray class]]) {
+        if (_verbose) {
+            NSMutableDictionary *allHeader = [weak_manager.requestSerializer.HTTPRequestHeaders mutableCopy];
+            [allHeader setValuesForKeysWithDictionary:header];
+            NSString *log = [NSString stringWithFormat:@"\n[%@]\n%@\nheader\n%@\nparam\n%@", method, uri, yc_prettyJson(allHeader), yc_prettyJson(param)];
+            if (self.logHandler) {
+                self.logHandler(log, @{@"body" : param}, config);
+            } else {
+                YCDLog(@"%@", log);
+            }
+        }
+    }
     if ([uri hasSuffix:@"&"]) {
         [uri deleteCharactersInRange:NSMakeRange(uri.length - 1, 1)];
     }
     if ([uri hasSuffix:@"?"]) {
         [uri deleteCharactersInRange:NSMakeRange(uri.length - 1, 1)];
     }
-    if (_verbose && !param[kYCRequestConfigKeyParamType]) {
-        NSMutableDictionary *allHeader = [weak_manager.requestSerializer.HTTPRequestHeaders mutableCopy];
-        [allHeader setValuesForKeysWithDictionary:header];
-        NSString *log = [NSString stringWithFormat:@"\n[%@]\n%@\nheader\n%@\nparam\n%@", method, uri, yc_prettyJson(allHeader), yc_prettyJson(param)];
-        if (self.logHandler) {
-            self.logHandler(log, param, config);
-        } else {
-            YCDLog(@"%@", log);
-        }
-    }
+
     if (self.monitorHandler) {
         self.monitorHandler(api, YCRequestStatusBegin, 0, config);
     }
@@ -267,7 +288,6 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
                           param:param
                      completion:^(BOOL isSuccess, id responseObject, NSURLResponse *response) {
                          __strong typeof(self) self = weak_self;
-                         [self.queue removeObject:unit];
                          if (self.verbose) {
                              [self logResult:isSuccess responseObject:responseObject uri:uri config:config];
                          }
@@ -280,10 +300,9 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
                                        response:response
                                          config:config
                                      completion:completion];
+                         [self.mapTable removeObjectForKey:api];
                      }];
-    if (unit) {
-        [self.queue addObject:unit];
-    }
+    [self.mapTable setObject:task forKey:api];
     return task;
 }
 
@@ -338,6 +357,10 @@ static inline NSString *yc_prettyJson(NSDictionary *object) {
     //unkown class, assert first
     NSCAssert(NO, NSStringFromClass([responseData class]));
     return nil;
+}
+
+- (NSURLSessionDataTask *)dataTaskForAPI:(id)api {
+    return [self.mapTable objectForKey:api];
 }
 
 @end
