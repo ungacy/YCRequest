@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'YCRequest'
-  s.version          = '0.1.25'
+  s.version          = '0.1.26'
   s.summary          = 'YCRequest.'
 
 # This description is used to generate tags and improve search results.
@@ -27,7 +27,7 @@ YCRequest with AFNetworking
   s.source           = { :git => 'https://github.com/ungacy/YCRequest.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/ungacy'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '9.0'
 
   s.source_files = 'YCRequest/Classes/*.{h,m}'
   s.public_header_files = 'YCRequest/Classes/YC*.h'
