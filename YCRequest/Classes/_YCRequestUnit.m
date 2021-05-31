@@ -123,7 +123,7 @@
             if (completion) {
                 completion(YES, responseObject, task.response);
             }
-            [weak_manager invalidateSessionCancelingTasks:YES];
+            [weak_manager invalidateSessionCancelingTasks:YES resetSession:NO];
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
             NSDate *end = [NSDate date];
@@ -131,7 +131,7 @@
             if (completion) {
                 completion(NO, error, task.response);
             }
-            [weak_manager invalidateSessionCancelingTasks:YES];
+            [weak_manager invalidateSessionCancelingTasks:YES resetSession:NO];
         }];
 }
 
