@@ -94,11 +94,11 @@
 
 /* Begin PBXFileReference section */
 		07AA91FF73B85D9BF56C9BF34FA3300C /* YCRequest-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "YCRequest-dummy.m"; sourceTree = "<group>"; };
-		1357ED3F6307C843F61A1C2A78EE484C /* Pods_YCRequest_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_YCRequest_Tests.framework; path = "Pods-YCRequest_Tests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1357ED3F6307C843F61A1C2A78EE484C /* Pods_YCRequest_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YCRequest_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B6868AB0DE552C1E6B40F4487F980B8 /* YCRequest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = YCRequest.release.xcconfig; sourceTree = "<group>"; };
 		1C492D843234EE853F5911F50285E957 /* YCRequestMaker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = YCRequestMaker.h; path = YCRequest/Classes/YCRequestMaker.h; sourceTree = "<group>"; };
 		22FFB73EDD8E2BACF432F44EDC2B5765 /* Pods-YCRequest_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-YCRequest_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
-		25E6573D74DB74428AF98C5389E38491 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		25E6573D74DB74428AF98C5389E38491 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		2870DB3DE15A375FD595964CB5440EA7 /* Pods-YCRequest_Tests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-YCRequest_Tests-umbrella.h"; sourceTree = "<group>"; };
 		29860FEC02CED01D9B96F00DE6169304 /* Pods-YCRequest_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-YCRequest_Example.modulemap"; sourceTree = "<group>"; };
 		2A215FED318559D73632A047889442B5 /* YYModel.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = YYModel.modulemap; sourceTree = "<group>"; };
@@ -119,13 +119,13 @@
 		5474496BD82BB916D1EC32996B777DB1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		56495B5784602A79279692C1B50FA6F6 /* AFNetworking.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AFNetworking.debug.xcconfig; sourceTree = "<group>"; };
 		567B5A73B852890D69CD487863405158 /* _YCRequestUnit.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = _YCRequestUnit.m; path = YCRequest/Classes/_YCRequestUnit.m; sourceTree = "<group>"; };
-		57B4DAECF0A8CEBC5CC5699711CA2505 /* Pods_YCRequest_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_YCRequest_Example.framework; path = "Pods-YCRequest_Example.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		57B4DAECF0A8CEBC5CC5699711CA2505 /* Pods_YCRequest_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_YCRequest_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AD85B7A2025C41AC0123E56F63CC629 /* AFNetworking.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AFNetworking.release.xcconfig; sourceTree = "<group>"; };
 		5B0590748BDF0418AA7264648CF657E7 /* YCRequest-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "YCRequest-prefix.pch"; sourceTree = "<group>"; };
 		65599D539D95F23141CE2E5C15BD8C8F /* AFURLRequestSerialization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFURLRequestSerialization.h; path = AFNetworking/AFURLRequestSerialization.h; sourceTree = "<group>"; };
 		65677D5A15AB00E76008659CCE8182FC /* AFNetworking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AFNetworking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		69515D36C4EE09750EBF7ACD1EFD72CE /* _YCRequestUnit.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = _YCRequestUnit.h; path = YCRequest/Classes/_YCRequestUnit.h; sourceTree = "<group>"; };
-		69BE947E11CB51BB56D4A2F0061439AD /* YCRequest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = YCRequest.framework; path = YCRequest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		69BE947E11CB51BB56D4A2F0061439AD /* YCRequest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = YCRequest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A360844DBF696D738425BD329CA6474 /* Pods-YCRequest_Tests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-YCRequest_Tests-acknowledgements.markdown"; sourceTree = "<group>"; };
 		6AA69744B6F44A3BE4EDEF27CFFB6120 /* YCRequestDefine.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = YCRequestDefine.h; path = YCRequest/Classes/YCRequestDefine.h; sourceTree = "<group>"; };
 		71BC3B6020E64DF5E385E5A1FC9727E2 /* YCRequestMaker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YCRequestMaker.m; path = YCRequest/Classes/YCRequestMaker.m; sourceTree = "<group>"; };
@@ -140,19 +140,19 @@
 		82D75FBF7D4B6723A1A9BA77E7C19F42 /* YYModel.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = YYModel.debug.xcconfig; sourceTree = "<group>"; };
 		8737FD46FB3C327B261194022962D3C4 /* Pods-YCRequest_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-YCRequest_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		89D7D26CF3B9F63A9FFC91733E9A807B /* AFNetworking-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AFNetworking-umbrella.h"; sourceTree = "<group>"; };
-		8ABA79517ED3F758F71E3E84F7083E1C /* YCRequest.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = YCRequest.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		8ABA79517ED3F758F71E3E84F7083E1C /* YCRequest.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = YCRequest.podspec; sourceTree = "<group>"; tabWidth = 2; };
 		8E587EA87A1F49B92F93883D91F754F5 /* Pods-YCRequest_Example-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-YCRequest_Example-Info.plist"; sourceTree = "<group>"; };
 		9014FE4E0AF0714C93FD8E6CB29A37D0 /* AFURLResponseSerialization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFURLResponseSerialization.h; path = AFNetworking/AFURLResponseSerialization.h; sourceTree = "<group>"; };
 		91788809C6468434576D4EC0181626DA /* YYClassInfo.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYClassInfo.m; path = YYModel/YYClassInfo.m; sourceTree = "<group>"; };
 		92F165B93CA5E4A2B9D510F3C86ECE4E /* YCRequest-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "YCRequest-Info.plist"; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9E5689A7BA61262A9EDA29E15C0CAE4A /* Pods-YCRequest_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-YCRequest_Example-acknowledgements.plist"; sourceTree = "<group>"; };
 		9FD7DA21A0AFE85EE7F2C9CD811DAEAD /* YCRequest.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = YCRequest.h; path = YCRequest/Classes/YCRequest.h; sourceTree = "<group>"; };
 		A1AB18AE9C1FE25926B2DAD102FB3B10 /* YYClassInfo.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = YYClassInfo.h; path = YYModel/YYClassInfo.h; sourceTree = "<group>"; };
 		A4B435900F4414B89F57066FCF862DA9 /* YCRequest.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YCRequest.m; path = YCRequest/Classes/YCRequest.m; sourceTree = "<group>"; };
-		A4FA15D44DF6BAC7550EDEED10862AA3 /* AFNetworking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = AFNetworking.framework; path = AFNetworking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4FA15D44DF6BAC7550EDEED10862AA3 /* AFNetworking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = AFNetworking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE4BDD9CAD2EBCE64DC2F27294DA0907 /* AFURLRequestSerialization.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFURLRequestSerialization.m; path = AFNetworking/AFURLRequestSerialization.m; sourceTree = "<group>"; };
-		B955798AC9A3EFC80813CEBDECF34626 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		B955798AC9A3EFC80813CEBDECF34626 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		BA8829080582925E298A31E6030BA441 /* AFURLSessionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFURLSessionManager.h; path = AFNetworking/AFURLSessionManager.h; sourceTree = "<group>"; };
 		BB5A3718D56FA558D33CE74CA1016EE1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/CoreFoundation.framework; sourceTree = DEVELOPER_DIR; };
 		BC4602AB75A68EB31DEC999B9B4C76C2 /* NSObject+YYModel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSObject+YYModel.h"; path = "YYModel/NSObject+YYModel.h"; sourceTree = "<group>"; };
@@ -164,7 +164,7 @@
 		D58758FAA7308CB60E78F48CA8504D91 /* Pods-YCRequest_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-YCRequest_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		D99A86F85A4516CA05767CFF86CC061D /* YYModel-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "YYModel-umbrella.h"; sourceTree = "<group>"; };
 		E3E4C68C507F6F95946A0B7C019AB1E4 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
-		E460D5B0416D36F66EE8EC89E5D2FA0A /* YYModel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = YYModel.framework; path = YYModel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E460D5B0416D36F66EE8EC89E5D2FA0A /* YYModel.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = YYModel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4B1592E26A1784C4FBC86148B7C37C0 /* Pods-YCRequest_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-YCRequest_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		E59D7C1BF06C12E27C80D6BF43153C7B /* AFNetworking-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "AFNetworking-Info.plist"; sourceTree = "<group>"; };
 		EC2251D9042C571377C57A3480342FF2 /* Pods-YCRequest_Tests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-YCRequest_Tests-Info.plist"; sourceTree = "<group>"; };
@@ -243,7 +243,6 @@
 				45704ADE29F9AAFD11996D1A288F28DD /* YYModel.h */,
 				A77C5FDCB8B434BBE9A6200F7BDF97CE /* Support Files */,
 			);
-			name = YYModel;
 			path = YYModel;
 			sourceTree = "<group>";
 		};
@@ -350,7 +349,6 @@
 				96E906FC69F272178B2BE128AC67F862 /* Serialization */,
 				F335B7D47D1F4630D51C8901A70496EF /* Support Files */,
 			);
-			name = AFNetworking;
 			path = AFNetworking;
 			sourceTree = "<group>";
 		};
@@ -892,8 +890,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
