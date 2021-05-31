@@ -16,12 +16,12 @@
     @(YCRequestMakerOperationMethodDELETE): @"DELETE", \
 }
 
-#define kYCRequestMakerParamDict @{                                          \
-    @(YCRequestMakerOperationParamQuery): kYCRequestConfigKeyParamTypeQuery, \
-    @(YCRequestMakerOperationParamBody): kYCRequestConfigKeyParamTypeBody,   \
-    @(YCRequestMakerOperationParamPath): kYCRequestConfigKeyParamTypePath,   \
-    @(YCRequestMakerOperationParamForm): kYCRequestConfigKeyParamTypeForm,   \
-    @(YCRequestMakerOperationParamHeader): kYCRequestConfigKeyParamTypeHeader,   \
+#define kYCRequestMakerParamDict @{                                            \
+    @(YCRequestMakerOperationParamQuery): kYCRequestConfigKeyParamTypeQuery,   \
+    @(YCRequestMakerOperationParamBody): kYCRequestConfigKeyParamTypeBody,     \
+    @(YCRequestMakerOperationParamPath): kYCRequestConfigKeyParamTypePath,     \
+    @(YCRequestMakerOperationParamForm): kYCRequestConfigKeyParamTypeForm,     \
+    @(YCRequestMakerOperationParamHeader): kYCRequestConfigKeyParamTypeHeader, \
 }
 
 @interface YCRequestMaker ()

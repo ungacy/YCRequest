@@ -55,8 +55,12 @@ const NSTimeInterval YCRequestDefaultTimeout = 5;
         _escapeSet = [[NSCharacterSet URLQueryAllowedCharacterSet] mutableCopy];
         [_escapeSet removeCharactersInString:@"+;&=$,"];
         _mapTable = [NSMapTable weakToStrongObjectsMapTable];
+        [self setup];
     }
     return self;
+}
+
+- (void)setup {
 }
 
 NSString *YCRequestURLEncode(id value) {
@@ -102,9 +106,9 @@ static inline void yc_wrapPathParam(NSString *key, id value, NSMutableString *ur
 }
 
 static inline NSObject *yc_wrapParam(NSArray *paramTemplate,
-                                                id model,
-                                                NSMutableString *uri,
-                                                NSMutableDictionary *header) {
+                                     id model,
+                                     NSMutableString *uri,
+                                     NSMutableDictionary *header) {
     NSMutableDictionary *param = [NSMutableDictionary dictionaryWithCapacity:paramTemplate.count];
     __block NSArray *arrayParam = nil;
     [paramTemplate enumerateObjectsUsingBlock:^(NSDictionary *_Nonnull obj,
@@ -124,7 +128,7 @@ static inline NSObject *yc_wrapParam(NSArray *paramTemplate,
             }
         }
         if ([type isEqualToString:kYCRequestConfigKeyParamTypeQuery]) { // add it to uri TODO : default value
-             yc_wrapQueryParam(key, value, uri);
+            yc_wrapQueryParam(key, value, uri);
         } else if ([type isEqualToString:kYCRequestConfigKeyParamTypeBody]) {
             id some = yc_wrapBodyParam(key, value, param);
             if (some) {
@@ -265,7 +269,7 @@ static inline NSString *yc_prettyJson(id object) {
             [allHeader setValuesForKeysWithDictionary:header];
             NSString *log = [NSString stringWithFormat:@"\n[%@]\n%@\nheader\n%@\nparam\n%@", method, uri, yc_prettyJson(allHeader), yc_prettyJson(param)];
             if (self.logHandler) {
-                self.logHandler(log, @{@"body" : param}, config);
+                self.logHandler(log, @{@"body": param}, config);
             } else {
                 YCDLog(@"%@", log);
             }
