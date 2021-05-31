@@ -1,6 +1,0 @@
-framework module YCRequest {
-  umbrella header "YCRequest-umbrella.h"
-
-  export *
-  module * { export * }
-}
